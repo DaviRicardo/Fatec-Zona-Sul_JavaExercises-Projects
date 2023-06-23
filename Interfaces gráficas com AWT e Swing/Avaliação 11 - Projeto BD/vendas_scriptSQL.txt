@@ -1,0 +1,93 @@
+-- MySQL Workbench Forward Engineering
+
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+
+-- -----------------------------------------------------
+-- Schema vendas
+-- -----------------------------------------------------
+
+-- -----------------------------------------------------
+-- Schema vendas
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `vendas` DEFAULT CHARACTER SET utf8 ;
+USE `vendas` ;
+
+-- -----------------------------------------------------
+-- Table `vendas`.`Clientes`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `vendas`.`Clientes` (
+  `codCliente` INT NOT NULL AUTO_INCREMENT,
+  `nome` VARCHAR(40) NOT NULL,
+  `ender` VARCHAR(45) NOT NULL,
+  `bairro` VARCHAR(20) NOT NULL,
+  `cidade` VARCHAR(20) NOT NULL,
+  `cep` VARCHAR(9) NOT NULL,
+  `uf` CHAR(2) NOT NULL,
+  `email` VARCHAR(30) NOT NULL,
+  `fone` VARCHAR(11) NULL,
+  `celular` VARCHAR(10) NOT NULL,
+  PRIMARY KEY (`codCliente`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `vendas`.`Pedidos`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `vendas`.`Pedidos` (
+  `codPed` INT NOT NULL AUTO_INCREMENT,
+  `Clientes_codCliente` INT NOT NULL,
+  `data` DATETIME NOT NULL,
+  PRIMARY KEY (`codPed`, `Clientes_codCliente`),
+  INDEX `fk_Pedidos_Clientes_idx` (`Clientes_codCliente` ASC),
+  CONSTRAINT `fk_Pedidos_Clientes`
+    FOREIGN KEY (`Clientes_codCliente`)
+    REFERENCES `vendas`.`Clientes` (`codCliente`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `vendas`.`Produtos`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `vendas`.`Produtos` (
+  `codProd` INT NOT NULL AUTO_INCREMENT,
+  `descricao` VARCHAR(30) NOT NULL,
+  `preco` DECIMAL(10,2) NOT NULL,
+  `unidade` CHAR(2) NOT NULL,
+  `qtdeInicial` DECIMAL(10,2) NOT NULL,
+  `dataCad` DATETIME NOT NULL,
+  `qtdeAtual` DECIMAL(10,2) NOT NULL,
+  PRIMARY KEY (`codProd`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `vendas`.`itensPed`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `vendas`.`itensPed` (
+  `codItensPed` INT NOT NULL AUTO_INCREMENT,
+  `Produtos_codProd` INT NOT NULL,
+  `Pedidos_codPed` INT NOT NULL,
+  `qtde` DECIMAL(10,2) NOT NULL,
+  PRIMARY KEY (`codItensPed`, `Produtos_codProd`, `Pedidos_codPed`),
+  INDEX `fk_itensPed_Produtos1_idx` (`Produtos_codProd` ASC),
+  INDEX `fk_itensPed_Pedidos1_idx` (`Pedidos_codPed` ASC),
+  CONSTRAINT `fk_itensPed_Produtos1`
+    FOREIGN KEY (`Produtos_codProd`)
+    REFERENCES `vendas`.`Produtos` (`codProd`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_itensPed_Pedidos1`
+    FOREIGN KEY (`Pedidos_codPed`)
+    REFERENCES `vendas`.`Pedidos` (`codPed`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
